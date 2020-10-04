@@ -1,8 +1,6 @@
 package com.rsk
 
-open class Meeting(val meetingName: String, open val location: Location = Location()) {
-
-    private val logger = Logger()
+open class Meeting(val meetingName: String, open val location: Location, val logger: Logger) {
 
     open val locationName = ""
 
@@ -25,8 +23,9 @@ class PersonalReview(
     meetingName: String,
     val employee: Participant,
     val reviewers: List<Participant>,
-    override val location: Room
-) : Meeting(meetingName, location) {
+    override val location: Room,
+    logger: Logger
+) : Meeting(meetingName, location, logger) {
 
     override val locationName
         get() = location.roomName
@@ -40,7 +39,6 @@ class PersonalReview(
         println("PersonalReview: verify meeting")
         super.verifyMeeting()
     }
-
 }
 
 
