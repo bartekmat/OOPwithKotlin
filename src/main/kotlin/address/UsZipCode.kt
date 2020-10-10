@@ -1,20 +1,7 @@
-package com.rsk
+package com.rsk.address
 
 import java.util.regex.Pattern
 
-abstract class PostalCode(val postCode: String) {
-    abstract fun verify()
-
-    init {
-        verify()
-    }
-}
-
-class UkPostalCode(postCode: String): PostalCode(postCode){
-    override fun verify(){
-
-    }
-}
 
 class UsZipCode(zipCode: String): PostalCode(zipCode){
     override fun verify(){
@@ -23,4 +10,3 @@ class UsZipCode(zipCode: String): PostalCode(zipCode){
         if (!matcher.matches()) throw IllegalArgumentException()
     }
 }
-

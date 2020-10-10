@@ -1,10 +1,21 @@
 package com.rsk
 
+import com.rsk.address.UkPostalAddress
+import com.rsk.address.UkPostalCode
+import com.rsk.address.UsZipCode
+import com.rsk.logger.ConsoleLogger
+
 fun main(){
     val logger = ConsoleLogger()
     val postCode = UsZipCode("12345")
     val meeting = Meeting("Review",
-                            UkAddress("a house", "a street", "a town", "a county", UkPostalCode("12345")),
+        UkPostalAddress(
+            "a house",
+            "a street",
+            "a town",
+            "a county",
+            UkPostalCode("12345")
+        ),
                             logger)
     val review = PersonalReview("Review Meeting",
                             Participant(Name("Alice"), ""),
