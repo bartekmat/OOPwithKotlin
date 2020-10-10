@@ -16,12 +16,17 @@ fun main(){
 
     review.closeReview()
 
-    val name = Name("Kevin")
-    val participant = Participant(name, "kevin@rsk.com")
-
+    var name = Name("Kevin Jones")
+    var participant = Participant(name, "kevin@rsk.com")
     meeting.addParticipant(participant)
 
+    name = Name("Alice Smith")
+    participant = Participant(name, "alice@rsk.com")
+    meeting.addParticipant(participant)
 
-
-
+    println("-------------Participants-------------")
+    meeting.participants.forEach{
+        println(it.name)
+    }
+    println("-------------Participants-------------")
 }
