@@ -4,9 +4,10 @@ import com.rsk.entities.LocationEntity
 import com.rsk.entities.MeetingEntity
 import com.rsk.entities.ParticipantEntity
 import com.rsk.repositories.MeetingFileSystemRepository
+import com.rsk.repositories.MeetingJsonSerializer
 
 fun main(){
-    val repository = MeetingFileSystemRepository()
+    val repository = MeetingFileSystemRepository(MeetingJsonSerializer())
     var participants = listOf(ParticipantEntity("Kevin"), ParticipantEntity("Alice"), ParticipantEntity("Tim"))
 
     var meeting = MeetingEntity(0, "Review", LocationEntity("Saphire"), participants)

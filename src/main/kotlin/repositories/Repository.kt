@@ -1,10 +1,6 @@
 package com.rsk.repositories
 
 import com.rsk.entities.MeetingEntity
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
-import kotlinx.serialization.json.JsonDecodingException
-import kotlinx.serialization.list
 import java.io.File
 
 interface IMeetingRepository : IRepository<MeetingEntity>
@@ -17,7 +13,7 @@ interface IRepository<T> {
     fun delete(id: Int): Boolean
 }
 
-abstract class FileSystemRepository<T>(val filename: String = "database.json") : IRepository<T> {
+abstract class FileSystemRepository<T: Entity>(val serializer: IJsonSerializer<T>, val filename: String = "database.json") : IRepository<T> {
     init {
         val file = File(filename)
         if (!file.isFile) {
@@ -25,60 +21,48 @@ abstract class FileSystemRepository<T>(val filename: String = "database.json") :
         }
         println(file.absolutePath)
     }
-}
 
-class MeetingFileSystemRepository : FileSystemRepository<MeetingEntity>(), IMeetingRepository {
-    private val json = Json(JsonConfiguration.Default)
 
-    private fun meetings(): List<MeetingEntity> {
+    private fun loadEntities(): List<T> {
         //open file
         val data = File(filename).readText()
         //deserialize meetings
-        return try {
-            json.parse(MeetingEntity.serializer().list, data)
-        } catch (exc: JsonDecodingException) {
-            listOf()
-        }
+        return serializer.read(data)
     }
 
-    override fun get(): List<MeetingEntity> {
-        return meetings()
+    override fun get(): List<T> {
+        return loadEntities()
     }
 
-    override fun get(id: Int): MeetingEntity {
-        return meetings().first { it.id == id }
+    override fun get(id: Int): T {
+        return loadEntities().first { it.id == id }
     }
 
-    override fun create(entity: MeetingEntity): MeetingEntity {
-        val mutableMeetings = meetings().toMutableList()
-        val newMeeting = MeetingEntity(
-            id = mutableMeetings.size + 1,
-            meetingName = entity.meetingName,
-            location = entity.location,
-            participants = entity.participants
-        )
-        mutableMeetings.add(newMeeting)
+    override fun create(entity: T): T {
+        val entities = loadEntities().toMutableList()
+        val newEntity = copyEntity(entity, entities.size + 1)
+        entities.add(newEntity)
 
         //serialize and save
-        saveJsonMeetings(mutableMeetings)
+        saveEntities(entities)
 
         //add a new one
         return entity
     }
 
-    private fun saveJsonMeetings(mutableMeetings: MutableList<MeetingEntity>) {
-        val jsonData = json.stringify(MeetingEntity.serializer().list, mutableMeetings)
+    private fun saveEntities(entities: MutableList<T>) {
+        val jsonData = serializer.write(entities)
         File(filename).writeText(jsonData)
     }
 
 
-    override fun update(entity: MeetingEntity): Boolean {
+    override fun update(entity: T): Boolean {
         //instead of changing the found entity we replace it by taking all except it and then adding the updated version
-        val filteredMeetings = getAllExcept(entity.id)
+        val filteredEntities = getAllExcept(entity.id)
 
-        filteredMeetings.add(entity)
+        filteredEntities.add(entity)
 
-        saveJsonMeetings(filteredMeetings)
+        saveEntities(filteredEntities)
         return true
     }
 
@@ -86,11 +70,28 @@ class MeetingFileSystemRepository : FileSystemRepository<MeetingEntity>(), IMeet
         //here i filter the id off the list and save it again to overwrite
         val allExcept = getAllExcept(id)
 
-        saveJsonMeetings(allExcept)
+        saveEntities(allExcept)
         return true
     }
 
-    private fun getAllExcept(id: Int): MutableList<MeetingEntity> {
-        return meetings().filter { it.id != id }.toMutableList()
+    private fun getAllExcept(id: Int): MutableList<T> {
+        return loadEntities().filter { it.id != id }.toMutableList()
     }
+
+    abstract fun copyEntity(entity: T, newId: Int): T
+}
+
+class MeetingFileSystemRepository(serializer: MeetingJsonSerializer) : FileSystemRepository<MeetingEntity>(serializer), IMeetingRepository {
+    override fun copyEntity(entity: MeetingEntity, newId: Int): MeetingEntity {
+        return MeetingEntity(
+            id = newId,
+            meetingName = entity.meetingName,
+            location = entity.location,
+            participants = entity.participants
+        )
+    }
+}
+
+interface Entity {
+    val id: Int
 }
