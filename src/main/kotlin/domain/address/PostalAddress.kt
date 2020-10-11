@@ -1,6 +1,6 @@
 package com.rsk.address
 
-import com.rsk.Location
+import com.rsk.domain.Location
 
 abstract class PostalAddress(val firstLine: String,
                              val secondLine: String,

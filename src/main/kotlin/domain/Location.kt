@@ -1,4 +1,4 @@
-package com.rsk
+package com.rsk.domain
 
 abstract class Location
 

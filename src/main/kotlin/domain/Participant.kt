@@ -1,4 +1,4 @@
-package com.rsk
+package com.rsk.domain
 
 class Participant(val name: Name, val email : String) {
 

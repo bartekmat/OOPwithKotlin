@@ -1,19 +1,13 @@
 package com.rsk.repositories
 
-import com.rsk.entities.MeetingEntity
+import com.rsk.entities.Entity
+import com.rsk.repositories.serialization.IJsonSerializer
 import java.io.File
 
-interface IMeetingRepository : IRepository<MeetingEntity>
-
-interface IRepository<T> {
-    fun get(): List<T>
-    fun get(id: Int): T
-    fun create(entity: T): T
-    fun update(entity: T): Boolean
-    fun delete(id: Int): Boolean
-}
-
-abstract class FileSystemRepository<T: Entity>(val serializer: IJsonSerializer<T>, val filename: String = "database.json") : IRepository<T> {
+abstract class FileSystemRepository<T : Entity>(
+    val serializer: IJsonSerializer<T>,
+    val filename: String = "database.json"
+) : IRepository<T> {
     init {
         val file = File(filename)
         if (!file.isFile) {
@@ -79,19 +73,4 @@ abstract class FileSystemRepository<T: Entity>(val serializer: IJsonSerializer<T
     }
 
     abstract fun copyEntity(entity: T, newId: Int): T
-}
-
-class MeetingFileSystemRepository(serializer: MeetingJsonSerializer) : FileSystemRepository<MeetingEntity>(serializer), IMeetingRepository {
-    override fun copyEntity(entity: MeetingEntity, newId: Int): MeetingEntity {
-        return MeetingEntity(
-            id = newId,
-            meetingName = entity.meetingName,
-            location = entity.location,
-            participants = entity.participants
-        )
-    }
-}
-
-interface Entity {
-    val id: Int
 }

@@ -1,15 +1,11 @@
-package com.rsk.repositories
+package com.rsk.repositories.serialization
 
 import com.rsk.entities.MeetingEntity
+import com.rsk.repositories.serialization.IJsonSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonDecodingException
 import kotlinx.serialization.list
-
-interface IJsonSerializer<T> {
-    fun write(entity: List<T>): String
-    fun read(data: String): List<T>
-}
 
 class MeetingJsonSerializer : IJsonSerializer<MeetingEntity> {
     private val json = Json(JsonConfiguration.Default)

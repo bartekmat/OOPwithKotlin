@@ -4,7 +4,7 @@ import com.rsk.entities.LocationEntity
 import com.rsk.entities.MeetingEntity
 import com.rsk.entities.ParticipantEntity
 import com.rsk.repositories.MeetingFileSystemRepository
-import com.rsk.repositories.MeetingJsonSerializer
+import com.rsk.repositories.serialization.MeetingJsonSerializer
 
 fun main(){
     val repository = MeetingFileSystemRepository(MeetingJsonSerializer())
