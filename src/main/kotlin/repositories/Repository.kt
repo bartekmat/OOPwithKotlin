@@ -52,7 +52,7 @@ class MeetingFileSystemRepository : FileSystemRepository<MeetingEntity>(), IMeet
     override fun create(entity: MeetingEntity): MeetingEntity {
         val mutableMeetings = meetings().toMutableList()
         val newMeeting = MeetingEntity(
-            id = entity.id,
+            id = mutableMeetings.size + 1,
             meetingName = entity.meetingName,
             location = entity.location,
             participants = entity.participants
